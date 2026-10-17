@@ -16,7 +16,7 @@ const sampleProjects = [
     startDate: new Date('2026-09-01'),
     targetDate: new Date('2026-10-30'),
     githubUrl: 'https://github.com/example/portfolio-updates',
-    liveUrl: 'https://portfolio-updates.local',
+    liveUrl: 'https://project-updates-toa1.onrender.com/',
     imageUrl: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
     adminNotes: 'Integrating user/admin authentication and status filters.',
     featured: true,

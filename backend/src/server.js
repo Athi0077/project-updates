@@ -13,6 +13,9 @@ const { seedCategoriesIfEmpty } = require('./controllers/categoryController');
 
 const app = express();
 
+const dns = require("node:dns")
+dns.setServers(['8.8.8.8', '8.8.4.4'])
+
 // Middlewares
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));

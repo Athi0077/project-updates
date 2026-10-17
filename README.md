@@ -7,7 +7,8 @@ A dynamic, full-stack portfolio management web application built with **React**,
 ## 🌟 Architecture & Access
 
 ### 1. 👥 Visitor / User View (`/`):
-- **Clean Public Experience:** Regular visitors only see your public portfolio roadmap at [http://localhost:3000](http://localhost:3000).
+- **Clean Public Experience:** Regular visitors only see your public portfolio roadmap at [https://project-updates-toa1.onrender.com/](https://project-updates-toa1.onrender.com/).
+- **Local Development:** [http://localhost:3000](http://localhost:3000) is still available for local testing.
 - **Zero Admin Clues:** No "Admin Panel" buttons or administrative links are visible in the navbar or footer.
 - **Categorized Roadmap:**
   - ⚡ **Current / Ongoing:** Active builds in progress
@@ -20,7 +21,7 @@ A dynamic, full-stack portfolio management web application built with **React**,
 
 ### 2. 🛡️ Secret Admin Access (`/admin007`):
 - **Secret URL:** Access the admin portal directly via:
-  👉 **`http://localhost:3000/admin007`**
+  👉 **`https://project-updates-toa1.onrender.com/admin007`**
 - **Configured Admin Credentials:**
   - Configured in your `backend/.env` file (`ADMIN_EMAIL` & `ADMIN_PASSWORD`)
 - **Admin Capabilities:**
@@ -36,9 +37,10 @@ A dynamic, full-stack portfolio management web application built with **React**,
 npm run dev
 ```
 
-- **Visitor Portfolio:** [http://localhost:3000](http://localhost:3000)
-- **Secret Admin Login:** [http://localhost:3000/admin007](http://localhost:3000/admin007)
-- **Backend API:** [http://localhost:5001/api](http://localhost:5001/api)
+- **Live Deployment:** [https://project-updates-toa1.onrender.com/](https://project-updates-toa1.onrender.com/)
+- **Visitor Portfolio (Local):** [http://localhost:3000](http://localhost:3000)
+- **Secret Admin Login (Local):** [http://localhost:3000/admin007](http://localhost:3000/admin007)
+- **Backend API (Local):** [http://localhost:5001/api](http://localhost:5001/api)
 
 ---
 
