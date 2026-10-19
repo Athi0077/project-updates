@@ -1,7 +1,8 @@
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const connectDB = require('./config/db');
 const { ensureAdminExists } = require('./controllers/authController');
 const authRoutes = require('./routes/authRoutes');
@@ -12,9 +13,6 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const { seedCategoriesIfEmpty } = require('./controllers/categoryController');
 
 const app = express();
-
-const dns = require("node:dns")
-dns.setServers(['8.8.8.8', '8.8.4.4'])
 
 // Middlewares
 app.use(cors());
@@ -40,7 +38,19 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/categories', categoryRoutes);
 
-// 404 handler
+// Serve frontend build if dist folder exists (e.g. production / Render)
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
+
+// 404 handler for unmatched API requests
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: 'Resource not found' });
 });
@@ -58,22 +68,23 @@ const PORT = process.env.PORT || 5001;
 
 // Start server
 const startServer = async () => {
+  // 1. Listen immediately so port is open without race condition or ERR_CONNECTION_REFUSED
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`===============================================`);
+    console.log(`Backend Server running on http://localhost:${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Projects API: http://localhost:${PORT}/api/projects`);
+    console.log(`Upload API:   http://localhost:${PORT}/api/upload`);
+    console.log(`===============================================`);
+  });
+
+  // 2. Connect to MongoDB and initialize defaults
   try {
     await connectDB();
     await ensureAdminExists();
     await seedCategoriesIfEmpty();
-
-    app.listen(PORT, () => {
-      console.log(`===============================================`);
-      console.log(`Backend Server running on http://localhost:${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/api/health`);
-      console.log(`Projects API: http://localhost:${PORT}/api/projects`);
-      console.log(`Upload API:   http://localhost:${PORT}/api/upload`);
-      console.log(`===============================================`);
-    });
   } catch (error) {
-    console.error('Failed to start server:', error.message);
-    process.exit(1);
+    console.error('Database connection/initialization error:', error.message);
   }
 };
 

@@ -59,6 +59,7 @@ const UserView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
 
@@ -117,9 +118,11 @@ const UserView = () => {
       const res = await getProjectStatsApi();
       if (res.data.success) {
         setStats(res.data.stats);
+        setFetchError(false);
       }
     } catch (err) {
       console.error('Error fetching stats:', err);
+      setFetchError(true);
     }
   };
 
@@ -145,9 +148,11 @@ const UserView = () => {
       const res = await getProjectsApi(params);
       if (res.data.success) {
         setProjects(res.data.data);
+        setFetchError(false);
       }
     } catch (err) {
       console.error('Error fetching projects:', err);
+      setFetchError(true);
     } finally {
       setLoading(false);
     }
@@ -470,6 +475,27 @@ const UserView = () => {
           <div className="py-20 flex flex-col items-center justify-center space-y-3">
             <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-slate-400">Loading projects...</p>
+          </div>
+        ) : fetchError && projects.length === 0 ? (
+          <div className="py-16 text-center bg-rose-950/20 rounded-2xl border border-rose-500/30 p-8 space-y-3">
+            <div className="w-12 h-12 mx-auto rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mb-2">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-semibold text-white">Cannot Connect to Backend Server</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              Unable to reach the API server. Please ensure the backend server is running (<code className="text-cyan-400 font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">npm run dev</code> from project root) and try again.
+            </p>
+            <button
+              onClick={() => {
+                fetchStats();
+                fetchCategories();
+                fetchProjects();
+              }}
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-colors shadow-lg shadow-cyan-500/20 cursor-pointer"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry Connection</span>
+            </button>
           </div>
         ) : projects.length === 0 ? (
           <div className="py-20 text-center bg-slate-900/40 rounded-2xl border border-dashed border-slate-800 p-8">

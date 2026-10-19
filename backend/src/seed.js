@@ -1,4 +1,11 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const dns = require('node:dns');
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+} catch (e) {
+  // Ignore
+}
 const mongoose = require('mongoose');
 const Project = require('./models/Project');
 const Admin = require('./models/Admin');

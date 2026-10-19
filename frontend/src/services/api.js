@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // In development mode, point to backend port 5001
+  if (import.meta.env.DEV) {
+    return 'http://localhost:5001/api';
+  }
+  // In production, use relative /api
+  return '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,10 +33,24 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor to handle unauthenticated responses
+// Interceptor to handle unauthenticated responses and brief network retry
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+
+    // Retry safe GET requests if backend was still spinning up
+    if (
+      (!error.response || error.code === 'ERR_NETWORK') &&
+      config &&
+      config.method === 'get' &&
+      (!config.__retryCount || config.__retryCount < 2)
+    ) {
+      config.__retryCount = (config.__retryCount || 0) + 1;
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      return api(config);
+    }
+
     if (error.response && error.response.status === 401) {
       // Clear token if expired or unauthorized
       if (localStorage.getItem('portfolio_token')) {
