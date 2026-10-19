@@ -4,12 +4,12 @@ const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // In development mode, point to backend port 5001
+  // In development mode, point to local backend port 5001
   if (import.meta.env.DEV) {
     return 'http://localhost:5001/api';
   }
-  // In production, use relative /api
-  return '/api';
+  // In production (Vercel, custom domain, etc.), use the live Render backend API
+  return 'https://project-updates-toa1.onrender.com/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
